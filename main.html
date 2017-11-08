@@ -23,6 +23,7 @@
 	position: absolute;
 	top: 200px;
 	left: 100px;
+	z-index: 3;
 }
 
 .pillairs {
@@ -37,7 +38,7 @@
 
 .pillairs-dis {
 	width: 50px;
-	height: 100px;
+	height: 150px;
 	background-color: #000;
 	position: absolute;
 	top: 200px;
@@ -63,7 +64,8 @@
 	let timeDis = 300; //状态切换时间间隔
 	let score = 0; //初始得分
 	let status = 'run'; //当前游戏状态
-	let timer1 = null; //时间对象
+	let timer1 = null; //bird时间对象
+	let timer2 = null; //pillair时间对象
 
 	function init() {
 		birdObj = new bird('bird');
@@ -73,11 +75,14 @@
 		document.addEventListener('keydown', keyEvent)
 		timer1 = window.setInterval(function() {
 			birdObj.fly(1);
-			pillairObj1.init();
+			pillairObj1.move();
 		},timeDis);
+		timer2 = window.setInterval(function() {
+			pillairObj1.move();
+		},timeDis)
 		window.setTimeout(function() {
-			pillairObj2.init();
-		}, 600);
+			pillairObj2.move();
+		}, timeDis);
 	}
 
 	function keyEvent(event) {			
@@ -92,12 +97,15 @@
 			if(status === 'run') {
 				status = 'pause';
 				window.clearInterval(timer1);
+				window.clearInterval(timer2);
 			} else {					
 				status = 'run';
 				timer1 = window.setInterval(function() {
 					birdObj.fly(1);
-					pillairObj1.init();
 				},timeDis);
+				timer2 = window.setInterval(function() {
+					pillairObj1.move();
+				},timeDis)
 			}				
 		}
 	}
@@ -125,17 +133,18 @@
 		this.speed = 50; //pillair移动速度
 		this.pillairObj = document.getElementById(pillairId);
 		this.pillairDisObj = document.getElementById(pillairsDisId);
-		pillair.prototype.move = function() {
+		this.pillairObj.style.left = '500px';
+		this.pillairDisObj.style.top = `${Math.random() * 300 + 100}px`;
+		pillair.prototype.move = function() {	
 			this.posLeft = this.pillairObj.offsetLeft - this.speed;
 			this.pillairObj.style.left = `${this.posLeft}px`;
-			if(this.pillairObj.style.left < 0) {
-				this.init();
+			if(this.pillairObj.offsetLeft < 0) {
+				this.reset();
 			}
 		}
-		pillair.prototype.init = function() {
+		pillair.prototype.reset = function() {
 			this.pillairObj.style.left = '500px';
-			this.pillairDisObj.style.top = `${Math.random(0,1) * 300 + 100}px`;
-			this.move();
+			this.pillairDisObj.style.top = `${Math.random() * 300 + 100}px`;
 		}
 	}
 
