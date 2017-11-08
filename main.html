@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>FlyBird</title>
+</head>
+<style>
+* {
+	margin :0;
+	padding: 0;
+}
+
+.game-area {
+	position: absolute;
+	width: 500px;
+	height: 700px;
+	background-color: black;
+}
+
+#bird {
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	top: 200px;
+	left: 100px;
+}
+
+.pillairs {
+	width: 50px;
+	height: 700px;
+	position: absolute;
+	top: 0px;
+	left: 500px;
+	z-index: 2;
+	background-color: greenyellow;
+}
+
+.pillairs-dis {
+	width: 50px;
+	height: 100px;
+	background-color: #000;
+	position: absolute;
+	top: 200px;
+}
+</style>
+<body>
+	<div class="game-area">
+		<span>
+			<img id="bird" src="bird.jpg" alt="">
+		</span>
+		<span class="pillairs" id="pillair1">
+			<span class="pillairs-dis" id="pillairDis1"></span>
+		</span>
+		<span class="pillairs" id="pillair2">
+			<span class="pillairs-dis" id="pillairDis2"></span>
+		</span>
+	</div>
+</body>
+</html>
+<script>
+	let birdObj = null; // bird对象
+	let pillairObj = null; //pillair对象
+	let timeDis = 300; //状态切换时间间隔
+	let score = 0; //初始得分
+	let status = 'run'; //当前游戏状态
+	let timer1 = null; //时间对象
+
+	function init() {
+		birdObj = new bird('bird');
+		pillairObj1 = new pillair('pillair1','pillairDis1');
+		pillairObj2 = new pillair('pillair2','pillairDis2');
+
+		document.addEventListener('keydown', keyEvent)
+		timer1 = window.setInterval(function() {
+			birdObj.fly(1);
+			pillairObj1.init();
+		},timeDis);
+		window.setTimeout(function() {
+			pillairObj2.init();
+		}, 600);
+	}
+
+	function keyEvent(event) {			
+		if(event.which === 38) {
+			//视最终效果决定要不要这里的清时
+			window.clearInterval(timer1);
+			birdObj.UD(-1);
+			timer1 = window.setInterval(function() {
+				birdObj.UD(1);
+			},timeDis);
+		} else if(event.which === 13) {
+			if(status === 'run') {
+				status = 'pause';
+				window.clearInterval(timer1);
+			} else {					
+				status = 'run';
+				timer1 = window.setInterval(function() {
+					birdObj.fly(1);
+					pillairObj1.init();
+				},timeDis);
+			}				
+		}
+	}
+
+	/** bird对象**/
+	let bird = function(id) {
+		this.birdObj = document.getElementById(id);
+		this.udDis = 50; //bird上下移动速度	
+		this.statusNum = 4;
+		bird.prototype.UD = function(dir) {
+			this.posTop = this.birdObj.offsetTop + this.udDis * dir;
+			this.birdObj.style.top = `${this.posTop}px`;
+		};
+		bird.prototype.changeStatus = function() {
+			// this.birdObj.src = `bird${(++this.statusNum - 1) % 4}.jpg`;
+		};
+		bird.prototype.fly = function() {
+			this.UD(1);
+			this.changeStatus();
+		}	
+	}
+
+	/**pillair对象**/ 
+	let pillair = function(pillairId,pillairsDisId) {
+		this.speed = 50; //pillair移动速度
+		this.pillairObj = document.getElementById(pillairId);
+		this.pillairDisObj = document.getElementById(pillairsDisId);
+		pillair.prototype.move = function() {
+			this.posLeft = this.pillairObj.offsetLeft - this.speed;
+			this.pillairObj.style.left = `${this.posLeft}px`;
+			if(this.pillairObj.style.left < 0) {
+				this.init();
+			}
+		}
+		pillair.prototype.init = function() {
+			this.pillairObj.style.left = '500px';
+			this.pillairDisObj.style.top = `${Math.random(0,1) * 300 + 100}px`;
+			this.move();
+		}
+	}
+
+	init();
+</script>
