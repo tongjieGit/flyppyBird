@@ -49,17 +49,15 @@
 		<span>
 			<img id="bird" src="bird.jpg" alt="">
 		</span>
-		<span class="pillairs" id="pillair1">
-			<span class="pillairs-dis" id="pillairDis1"></span>
-		</span>
-		<span class="pillairs" id="pillair2">
-			<span class="pillairs-dis" id="pillairDis2"></span>
+		<span class="pillairs" id="pillair">
+			<span class="pillairs-dis" id="pillairDis"></span>
 		</span>
 	</div>
 </body>
 </html>
 <script>
 	let birdObj = null; // bird对象
+	// let pillairArr = []; //pillair数组对象
 	let pillairObj = null; //pillair对象
 	let timeDis = 300; //状态切换时间间隔
 	let score = 0; //初始得分
@@ -69,22 +67,18 @@
 
 	function init() {
 		birdObj = new bird('bird');
-		pillairObj1 = new pillair('pillair1','pillairDis1');
-		pillairObj2 = new pillair('pillair2','pillairDis2');
-
+		pillairObj = new pillair();
 		document.addEventListener('keydown', keyEvent)
 		timer1 = window.setInterval(function() {
 			birdObj.fly(1);
-			pillairObj1.move();
+			pillairObj.init();
 		},timeDis);
 		timer2 = window.setInterval(function() {
-			pillairObj1.move();
+			pillairObj.init();
 		},timeDis)
-		window.setTimeout(function() {
-			pillairObj2.move();
-		}, timeDis);
 	}
 
+	/**时间监听**/
 	function keyEvent(event) {			
 		if(event.which === 38) {
 			//视最终效果决定要不要这里的清时
@@ -104,9 +98,18 @@
 					birdObj.fly(1);
 				},timeDis);
 				timer2 = window.setInterval(function() {
-					pillairObj1.move();
+					pillairObj.move();
 				},timeDis)
 			}				
+		}
+	}
+
+	/**规则处理**/
+	function  handle() {
+		if(birdObj.style.top === 0 || birdObj.style.bottom === 0 || birdObj.offsetTop === pillairObj) {
+			status = 'pause';
+			window.clearInterval(timer1);
+			window.clearInterval(timer2);
 		}
 	}
 
@@ -129,22 +132,47 @@
 	}
 
 	/**pillair对象**/ 
-	let pillair = function(pillairId,pillairsDisId) {
+	let pillair = function() {
 		this.speed = 50; //pillair移动速度
-		this.pillairObj = document.getElementById(pillairId);
-		this.pillairDisObj = document.getElementById(pillairsDisId);
-		this.pillairObj.style.left = '500px';
-		this.pillairDisObj.style.top = `${Math.random() * 300 + 100}px`;
+		this.newPillair = null;
+		this.newPillairDis = null;
+		this.timer = null;
+		// this.timer1 = null;
+		// 用来生成pillair的方法
+    pillair.prototype.createPillair = function() {
+        this.newPillair = document.createElement('span');
+				this.newPillairDis = document.createElement('span')
+        newPillair.style.width = '100px';
+        newPillair.style.height = '700px';
+        newPillair.style.position = 'absolute';
+        newPillair.style.left = '500px';
+        newPillair.style.top = '0px';
+				newPillairDis.style.width = '100px';
+				newPillairDis.style.height = '160px';
+				newPillairDis.style.position = 'absulute';
+				newPillairDis.style.backgroundColor = '#000';
+				newPillairDis.style.left = '500px';
+				newPillairDis.style.top = `${Math.random() * 300 + 100}px`; 
+        // return (newPillair, newPillairDis);
+    }
 		pillair.prototype.move = function() {	
-			this.posLeft = this.pillairObj.offsetLeft - this.speed;
-			this.pillairObj.style.left = `${this.posLeft}px`;
-			if(this.pillairObj.offsetLeft < 0) {
-				this.reset();
+			this.posLeft = this.newPillair.offsetLeft - this.speed;
+			this.newPillair.style.left = `${this.posLeft}px`;
+			this.newPillairDis.style.left = `${this.posLeft}px`;
+			if(this.newPillair.offsetLeft < 0) {
+				this.destory();
 			}
 		}
-		pillair.prototype.reset = function() {
-			this.pillairObj.style.left = '500px';
-			this.pillairDisObj.style.top = `${Math.random() * 300 + 100}px`;
+		pillair.prototype.destory = function() {
+			this.newPillair = null;
+			this.newPillairDis = null;
+			window.clearInterval(timer);
+		}
+		pillair.prototype.init = function() {
+			timer = window.setInterval(function() {
+				this.createPillair();
+				this.move();
+			},300);
 		}
 	}
 
