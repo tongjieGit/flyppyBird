@@ -1,59 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>FlyBird</title>
 </head>
 <style>
-* {
-	margin :0;
-	padding: 0;
-}
+	* {
+		margin: 0;
+		padding: 0;
+	}
 
-.game-area {
-	position: absolute;
-	width: 500px;
-	height: 700px;
-	background-color: black;
-}
+	.game-area {
+		position: absolute;
+		width: 500px;
+		height: 700px;
+		background-image: url('img/bg.jpg');
+	}
 
-#bird {
-	width: 100px;
-	height: 100px;
-	position: absolute;
-	top: 200px;
-	left: 100px;
-	z-index: 3;
-}
-
-.pillairs {
-	width: 50px;
-	height: 700px;
-	position: absolute;
-	top: 0px;
-	left: 500px;
-	z-index: 2;
-	background-color: greenyellow;
-}
-
-.pillairs-dis {
-	width: 50px;
-	height: 150px;
-	background-color: #000;
-	position: absolute;
-	top: 200px;
-}
+	#bird {
+		width: 100px;
+		height: 100px;
+		position: absolute;
+		top: 200px;
+		left: 100px;
+		z-index: 3;
+	}
 </style>
+
 <body>
 	<div class="game-area">
 		<span>
-			<img id="bird" src="bird.jpg" alt="">
-		</span>
-		<span class="pillairs" id="pillair">
-			<span class="pillairs-dis" id="pillairDis"></span>
+			<img id="bird" src="img/pig0.png" alt="">
 		</span>
 	</div>
 </body>
+
 </html>
 <script>
 	let birdObj = null; // bird对象
@@ -68,45 +50,46 @@
 	function init() {
 		birdObj = new bird('bird');
 		pillairObj = new pillair();
+		// pillairObj.createPillair();
 		document.addEventListener('keydown', keyEvent)
-		timer1 = window.setInterval(function() {
+		timer1 = window.setInterval(function () {
 			birdObj.fly(1);
 			pillairObj.init();
-		},timeDis);
-		timer2 = window.setInterval(function() {
-			pillairObj.init();
-		},timeDis)
+		}, timeDis);
+		timer2 = window.setInterval(function () {
+			// pillairObj.init();
+		}, timeDis)
 	}
 
 	/**时间监听**/
-	function keyEvent(event) {			
-		if(event.which === 38) {
+	function keyEvent(event) {
+		if (event.which === 38) {
 			//视最终效果决定要不要这里的清时
 			window.clearInterval(timer1);
-			birdObj.UD(-1);
-			timer1 = window.setInterval(function() {
-				birdObj.UD(1);
-			},timeDis);
-		} else if(event.which === 13) {
-			if(status === 'run') {
+			birdObj.fly(-1);
+			timer1 = window.setInterval(function () {
+				birdObj.fly(1);
+			}, timeDis);
+		} else if (event.which === 13) {
+			if (status === 'run') {
 				status = 'pause';
 				window.clearInterval(timer1);
 				window.clearInterval(timer2);
-			} else {					
+			} else {
 				status = 'run';
-				timer1 = window.setInterval(function() {
+				timer1 = window.setInterval(function () {
 					birdObj.fly(1);
-				},timeDis);
-				timer2 = window.setInterval(function() {
-					pillairObj.move();
-				},timeDis)
-			}				
+				}, timeDis);
+				timer2 = window.setInterval(function () {
+					// pillairObj.move();
+				}, timeDis)
+			}
 		}
 	}
 
 	/**规则处理**/
-	function  handle() {
-		if(birdObj.style.top === 0 || birdObj.style.bottom === 0 || birdObj.offsetTop === pillairObj) {
+	function handle() {
+		if (birdObj.style.top === 0 || birdObj.style.bottom === 0 || birdObj.offsetTop === pillairObj) {
 			status = 'pause';
 			window.clearInterval(timer1);
 			window.clearInterval(timer2);
@@ -114,65 +97,70 @@
 	}
 
 	/** bird对象**/
-	let bird = function(id) {
+	let bird = function (id) {
 		this.birdObj = document.getElementById(id);
 		this.udDis = 50; //bird上下移动速度	
-		this.statusNum = 4;
-		bird.prototype.UD = function(dir) {
+		this.statusNum = 3;
+		bird.prototype.UD = function (dir) {
 			this.posTop = this.birdObj.offsetTop + this.udDis * dir;
 			this.birdObj.style.top = `${this.posTop}px`;
 		};
-		bird.prototype.changeStatus = function() {
-			// this.birdObj.src = `bird${(++this.statusNum - 1) % 4}.jpg`;
+		bird.prototype.changeStatus = function () {
+			this.birdObj.src = `img/pig${(++this.statusNum - 1) % 3}.png`;
 		};
-		bird.prototype.fly = function() {
-			this.UD(1);
+		bird.prototype.fly = function (dir) {
+			this.UD(dir);
 			this.changeStatus();
-		}	
+		}
 	}
 
-	/**pillair对象**/ 
-	let pillair = function() {
+	/**pillair对象**/
+	let pillair = function () {
 		this.speed = 50; //pillair移动速度
-		this.newPillair = null;
-		this.newPillairDis = null;
+		this.newPillairUp = null;
+		this.newPillairDn = null;
 		this.timer = null;
-		// this.timer1 = null;
+		this.timer1 = null;
 		// 用来生成pillair的方法
-    pillair.prototype.createPillair = function() {
-        this.newPillair = document.createElement('span');
-				this.newPillairDis = document.createElement('span')
-        newPillair.style.width = '100px';
-        newPillair.style.height = '700px';
-        newPillair.style.position = 'absolute';
-        newPillair.style.left = '500px';
-        newPillair.style.top = '0px';
-				newPillairDis.style.width = '100px';
-				newPillairDis.style.height = '160px';
-				newPillairDis.style.position = 'absulute';
-				newPillairDis.style.backgroundColor = '#000';
-				newPillairDis.style.left = '500px';
-				newPillairDis.style.top = `${Math.random() * 300 + 100}px`; 
-        // return (newPillair, newPillairDis);
-    }
-		pillair.prototype.move = function() {	
-			this.posLeft = this.newPillair.offsetLeft - this.speed;
-			this.newPillair.style.left = `${this.posLeft}px`;
-			this.newPillairDis.style.left = `${this.posLeft}px`;
-			if(this.newPillair.offsetLeft < 0) {
+		pillair.prototype.createPillair = function () {
+			this.newPillairUp = document.createElement('span');
+			this.newPillairDn = document.createElement('span');
+			document.body.appendChild(this.newPillairUp);
+			document.body.appendChild(this.newPillairDn);
+			this.newPillairUp.style.position = 'absolute';
+			this.newPillairUp.style.width = '100px';
+			this.newPillairUp.style.height = '700px';
+			this.newPillairUp.style.backgroundImage = 'url(img/pillair.png)';
+			this.newPillairUp.style.left = '400px';
+			this.newPillairUp.style.top = `-${Math.random() * 450 + 250 }px`;
+			this.newPillairDn.style.position = 'absolute';
+			this.newPillairDn.style.width = '100px';
+			this.newPillairDn.style.height = '700px';
+			this.newPillairDn.style.backgroundImage = 'url(img/pillair.png)';
+			this.newPillairDn.style.left = '400px';
+			this.newPillairDn.style.bottom = `${-850 - this.newPillairUp.offsetTop}px`;
+		};
+		pillair.prototype.move = function () {
+			this.posLeft = this.newPillairUp.offsetLeft - this.speed;
+			this.newPillairUp.style.left = `${this.posLeft}px`;
+			this.newPillairDn.style.left = `${this.posLeft}px`;
+			if (this.newPillairUp.offsetLeft < newPillairUp) {
 				this.destory();
 			}
-		}
-		pillair.prototype.destory = function() {
-			this.newPillair = null;
-			this.newPillairDis = null;
+		};
+		pillair.prototype.destory = function () {
+			this.newPillairUp = null;
+			this.newPillairDn = null;
 			window.clearInterval(timer);
-		}
-		pillair.prototype.init = function() {
-			timer = window.setInterval(function() {
-				this.createPillair();
-				this.move();
-			},300);
+		};
+		pillair.prototype.init = function () {
+			let _this = this;
+			timer = window.setInterval(function () {
+				_this.move();
+			}, 300);
+			// timer1 = window.setInterval(function () {
+			_this.createPillair();
+			// }, 600)
 		}
 	}
 

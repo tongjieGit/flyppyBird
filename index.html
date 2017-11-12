@@ -1,38 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>开始</title>
 </head>
 <style>
-* {
-	margin :0;
-	padding: 0;
-}
+	* {
+		margin: 0;
+		padding: 0;
+	}
 
-.game-area {
-	position: absolute;
-	width: 500px;
-	height: 700px;
-	background-color: black;
-}
+	.game-area {
+		position: absolute;
+		width: 500px;
+		height: 700px;
+		background-color: black;
+	}
 
-img {
-	width: 500px;
-	height: 700px;
-}
+	img {
+		width: 500px;
+		height: 700px;
+	}
 </style>
+
 <body>
-	<div class="game-area"><img src="bg.jpg" alt=""></div>
+	<div class="game-area"><img src="img/bg.jpg" alt=""></div>
 </body>
+
 </html>
 <script>
-window.onload = function () {
-	document.addEventListener('keydown', enter)
-}
-function enter(event) {
-	if (event.which == 13) {
-        window.location.href =  'main.html';
-    }	
-}
+	window.onload = function () {
+		document.addEventListener('keydown', enter)
+	}
+
+	function enter(event) {
+		if (event.which == 13) {
+			window.location.href = 'main.html';
+		}
+	}
 </script>
