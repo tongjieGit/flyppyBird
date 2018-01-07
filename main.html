@@ -44,30 +44,34 @@
 	let timeDis = 300; //状态切换时间间隔
 	let score = 0; //初始得分
 	let status = 'run'; //当前游戏状态
-	let timer1 = null; //bird时间对象
-	let timer2 = null; //pillair时间对象
+	let timer1 = null; //pillairObj_1时间对象
+	let timer2 = null; //pillairObj_2时间对象
+	let timer3 = null; //bird时间对象
 
 	function init() {
 		birdObj = new bird('bird');
-		pillairObj = new pillair();
+		pillairObj_1 = new pillair();
+		pillairObj_2 = new pillair();
 		// pillairObj.createPillair();
 		document.addEventListener('keydown', keyEvent)
-		timer1 = window.setInterval(function () {
-			birdObj.fly(1);
-			pillairObj.init();
+		timer1 = window.setTimeout(function () {
+			pillairObj_1.init();
 		}, timeDis);
-		timer2 = window.setInterval(function () {
-			// pillairObj.init();
-		}, timeDis)
+		timer2 = window.setTimeout(function () {
+			pillairObj_2.init();
+		}, timeDis*6)
+		timer3 = window.setInterval(function () {
+			birdObj.fly(1);
+		},timeDis)
 	}
 
 	/**时间监听**/
 	function keyEvent(event) {
 		if (event.which === 38) {
 			//视最终效果决定要不要这里的清时
-			window.clearInterval(timer1);
+			window.clearInterval(timer3);
 			birdObj.fly(-1);
-			timer1 = window.setInterval(function () {
+			timer3 = window.setInterval(function () {
 				birdObj.fly(1);
 			}, timeDis);
 		} else if (event.which === 13) {
@@ -75,9 +79,10 @@
 				status = 'pause';
 				window.clearInterval(timer1);
 				window.clearInterval(timer2);
+				window.clearInterval(timer3);
 			} else {
 				status = 'run';
-				timer1 = window.setInterval(function () {
+				timer3 = window.setInterval(function () {
 					birdObj.fly(1);
 				}, timeDis);
 				timer2 = window.setInterval(function () {
@@ -93,6 +98,7 @@
 			status = 'pause';
 			window.clearInterval(timer1);
 			window.clearInterval(timer2);
+			window.clearInterval(timer3);
 		}
 	}
 
@@ -144,8 +150,14 @@
 			this.posLeft = this.newPillairUp.offsetLeft - this.speed;
 			this.newPillairUp.style.left = `${this.posLeft}px`;
 			this.newPillairDn.style.left = `${this.posLeft}px`;
-			if (this.newPillairUp.offsetLeft < newPillairUp) {
-				this.destory();
+			// if (this.newPillairUp.offsetLeft < newPillairUp) {
+			// 	this.destory();
+			// }
+			// console.log(this.newPillairUp.offsetLeft)
+			if(this.newPillairUp.offsetLeft <= -100 && this.newPillairDn.offsetLeft <= -100){
+				// alert(1)
+				this.newPillairUp.style.left = '400px'
+				this.newPillairDn.style.left = '400px'
 			}
 		};
 		pillair.prototype.destory = function () {
