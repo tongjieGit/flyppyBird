@@ -40,7 +40,9 @@
 <script>
 	let birdObj = null; // bird对象
 	// let pillairArr = []; //pillair数组对象
-	let pillairObj = null; //pillair对象
+	let pillairObj_1 = null; //pillair对象
+	let pillairObj_2 = null;//pillair对象
+	let scoreObj = null;//score对象
 	let timeDis = 300; //状态切换时间间隔
 	let score = 0; //初始得分
 	let status = 'run'; //当前游戏状态
@@ -52,6 +54,7 @@
 		birdObj = new bird('bird');
 		pillairObj_1 = new pillair();
 		pillairObj_2 = new pillair();
+		scoreObj = new score('score',score);
 		// pillairObj.createPillair();
 		document.addEventListener('keydown', keyEvent)
 		timer1 = window.setTimeout(function () {
@@ -77,29 +80,39 @@
 		} else if (event.which === 13) {
 			if (status === 'run') {
 				status = 'pause';
-				window.clearInterval(timer1);
-				window.clearInterval(timer2);
+				window.clearTimeout(timer1);
+				window.clearTimeout(timer2);
 				window.clearInterval(timer3);
 			} else {
 				status = 'run';
 				timer3 = window.setInterval(function () {
 					birdObj.fly(1);
 				}, timeDis);
-				timer2 = window.setInterval(function () {
-					// pillairObj.move();
-				}, timeDis)
+				// timer2 = window.setInterval(function () {
+				// 	// pillairObj.move();
+				// }, timeDis)
 			}
 		}
 	}
 
 	/**规则处理**/
 	function handle() {
-		if (birdObj.style.top === 0 || birdObj.style.bottom === 0 || birdObj.offsetTop === pillairObj) {
+		if (birdObj.style.top === 0 || birdObj.style.bottom === 0 || birdObj.offsetTop === pillairObj) {//birdObj
 			status = 'pause';
-			window.clearInterval(timer1);
-			window.clearInterval(timer2);
+			window.clearTimeout(timer1);
+			window.clearTimeout(timer2);
 			window.clearInterval(timer3);
+		}else if(birdObj) {
+			
 		}
+	}
+	/**score对象**/
+	let score = function (id, value) {
+		this.scoreObj = document.getElementById(id);
+		this.scoreObj.innerText = value;
+		score.prototype.change = function () {
+			this.scoreObj.innerText += 5;
+		};
 	}
 
 	/** bird对象**/
@@ -117,6 +130,9 @@
 		bird.prototype.fly = function (dir) {
 			this.UD(dir);
 			this.changeStatus();
+		}
+		birdObj.prototype.destroy = function () {
+
 		}
 	}
 
@@ -154,11 +170,14 @@
 			// 	this.destory();
 			// }
 			// console.log(this.newPillairUp.offsetLeft)
-			if(this.newPillairUp.offsetLeft <= -100 && this.newPillairDn.offsetLeft <= -100){
-				// alert(1)
-				this.newPillairUp.style.left = '400px'
-				this.newPillairDn.style.left = '400px'
+			if(this.newPillairUp.offsetLeft === 0 && this.newPillairDn.offsetLeft === 0){
+				// this.score();
 			}
+			if(this.newPillairUp.offsetLeft <= -100 && this.newPillairDn.offsetLeft <= -100){
+				this.newPillairUp.style.left = '400px';
+				this.newPillairDn.style.left = '400px';
+			}
+			handle();
 		};
 		pillair.prototype.destory = function () {
 			this.newPillairUp = null;
@@ -170,9 +189,7 @@
 			timer = window.setInterval(function () {
 				_this.move();
 			}, 300);
-			// timer1 = window.setInterval(function () {
 			_this.createPillair();
-			// }, 600)
 		}
 	}
 
